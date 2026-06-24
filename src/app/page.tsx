@@ -1,65 +1,71 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState } from 'react';
+import { InputForm } from '@/components/InputForm';
+import { RecommendationCard } from '@/components/RecommendationCard';
+import { ComparisonTable } from '@/components/ComparisonTable';
+import { getRecommendations } from './actions';
+import type { RecommendationView } from '@/lib/recommend/service';
+
+export default function HomePage() {
+  const [views, setViews] = useState<RecommendationView[] | null>(null);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="mx-auto max-w-xl p-6">
+      <h1 className="mb-1 text-2xl font-bold">통근 기반 동네 추천</h1>
+      <p className="mb-6 text-sm text-gray-500">예산·통근·취향을 넣으면 총비용까지 따져 동네를 추천해요.</p>
+
+      <InputForm
+        onSubmit={async (form) => {
+          setLoading(true);
+          setErrors([]);
+          const res = await getRecommendations(form);
+          setLoading(false);
+          if (res.ok) {
+            setViews(res.views);
+            setIsDemo(res.isDemo);
+          } else {
+            setErrors(res.errors);
+          }
+        }}
+      />
+
+      {loading && <p className="mt-4 text-sm text-gray-500">분석 중…</p>}
+      {errors.length > 0 && (
+        <ul className="mt-4 list-disc pl-5 text-sm text-red-600">
+          {errors.map((e) => (
+            <li key={e}>{e}</li>
+          ))}
+        </ul>
+      )}
+
+      {views && (
+        <section className="mt-6 space-y-4">
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-lg font-semibold">추천 결과</h2>
+          </div>
+          <p className="text-xs text-gray-400">
+            시세는 과거 실거래가 평균 기반 참고용이며, 실제 매물·계약가와 다를 수 있습니다.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+          {isDemo && (
+            <div className="rounded bg-yellow-50 px-3 py-2 text-sm text-yellow-800">
+              데모 모드: 실제 API 키가 없어 샘플 데이터로 동작 중입니다.
+            </div>
+          )}
+          {views.map((v) => (
+            <RecommendationCard key={v.code} view={v} />
+          ))}
+          {views.length >= 2 && (
+            <div className="mt-6">
+              <h3 className="mb-2 text-base font-semibold">동네 비교</h3>
+              <ComparisonTable views={views} />
+            </div>
+          )}
+        </section>
+      )}
+    </main>
   );
 }
