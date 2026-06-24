@@ -26,7 +26,11 @@ export class FixtureDataProvider implements DataProvider {
     if (!match) {
       throw new Error(`No fixture commute for location ${from.lat},${from.lng}`);
     }
-    return this.config.commutes[match.code];
+    const commute = this.config.commutes[match.code];
+    if (!commute) {
+      throw new Error(`No fixture commute for neighborhood code ${match.code}`);
+    }
+    return commute;
   }
 
   async getFuelPricePerLiter(): Promise<number> {

@@ -95,4 +95,31 @@ describe('scoreNeighborhoods', () => {
     expect(result[1].rank).toBe(2);
     expect(result[0].totalScore).toBeGreaterThan(result[1].totalScore);
   });
+
+  it('후보가 1개면 모든 축 50, 총점 50', () => {
+    const only = makeCandidate('ONLY', 600000, 100000, 200000, {
+      ...flatAmenities,
+      cafe: 10,
+      restaurant: 10,
+      park: 3,
+    });
+    const result = scoreNeighborhoods([only], {
+      workplace: { lat: 0, lng: 0 },
+      budgetMonthlyRent: 900000,
+      budgetDeposit: 0,
+      commuteMode: 'transit',
+      livelyPreference: 0.5,
+    });
+    expect(result).toHaveLength(1);
+    expect(result[0].axisScores).toEqual({
+      rent: 50,
+      realCost: 50,
+      opportunity: 50,
+      amenity: 50,
+      taste: 50,
+    });
+    // DEFAULT_WEIGHTS 합 = 1.0 이므로 총점도 50
+    expect(result[0].totalScore).toBe(50);
+    expect(result[0].rank).toBe(1);
+  });
 });

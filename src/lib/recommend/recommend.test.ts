@@ -9,8 +9,9 @@ describe('recommend', () => {
     const results = await recommend(SAMPLE_INPUT, provider, { regionCode: '11680' });
     expect(results.length).toBe(3);
     expect(results[0].rank).toBe(1);
-    // 정렬 보장: 내림차순
+    // 정렬 보장: 내림차순 (전체 체인)
     expect(results[0].totalScore).toBeGreaterThanOrEqual(results[1].totalScore);
+    expect(results[1].totalScore).toBeGreaterThanOrEqual(results[2].totalScore);
     // 비용 분해가 채워졌는지
     expect(results[0].cost.totalMonthlyCost).toBeGreaterThan(0);
   });
