@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "demo": "tsx scripts/demo.ts"
+    "demo": "tsx scripts/demo.ts",
+    "smoke:live": "tsx scripts/smoke-live.ts"
   },
   "dependencies": {
     "fast-xml-parser": "^5.9.3",
