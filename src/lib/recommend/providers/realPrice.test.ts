@@ -21,6 +21,13 @@ describe('parseOfficetelRentXml', () => {
     const xml = `<response><body><items></items><totalCount>0</totalCount></body></response>`;
     expect(parseOfficetelRentXml(xml)).toEqual([]);
   });
+
+  it('item이 하나뿐이면(배열 아님) 단일 RentItem로 파싱', () => {
+    const xml = `<response><body><items><item><보증금액>1,500</보증금액><월세금액>60</월세금액><법정동>역삼동</법정동><전용면적>30</전용면적></item></items></body></response>`;
+    const items = parseOfficetelRentXml(xml);
+    expect(items).toHaveLength(1);
+    expect(items[0]).toEqual({ dong: '역삼동', deposit: 15000000, monthlyRent: 600000, areaM2: 30 });
+  });
 });
 
 describe('aggregateRentByDong', () => {
