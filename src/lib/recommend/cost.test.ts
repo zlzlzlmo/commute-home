@@ -37,6 +37,10 @@ describe('monthlyOpportunityCost', () => {
   it('대중교통: 편도 30분 × 2 × 20일 / 60 = 20시간, ×12000원 = 240000', () => {
     expect(monthlyOpportunityCost('transit', commute, 12000, 20)).toBe(240000);
   });
+
+  it('자동차: 편도 25분 × 2 × 20일 / 60 × 12000원 = 200000', () => {
+    expect(monthlyOpportunityCost('car', commute, 12000, 20)).toBe(200000);
+  });
 });
 
 describe('computeCostBreakdown', () => {
@@ -65,5 +69,22 @@ describe('computeCostBreakdown', () => {
     expect(cost.commuteRealCost).toBe(66000);
     expect(cost.opportunityCost).toBe(264000);
     expect(cost.totalMonthlyCost).toBe(700000 + 66000 + 264000);
+  });
+
+  it('자동차 모드 + 기본값(12km/L, 22일, 12000원) 적용', () => {
+    const input: UserInput = {
+      workplace: { lat: 37.49, lng: 127.02 },
+      budgetMonthlyRent: 800000,
+      budgetDeposit: 25000000,
+      commuteMode: 'car',
+      livelyPreference: 0.5,
+    };
+    const cost = computeCostBreakdown(input, neighborhood, commute, 1700);
+    // 통근실비: round((10×2/12) × 1700 × 22) = 62333
+    // 기회비용: round(25×2×22/60 × 12000) = 220000
+    expect(cost.monthlyRent).toBe(700000);
+    expect(cost.commuteRealCost).toBe(62333);
+    expect(cost.opportunityCost).toBe(220000);
+    expect(cost.totalMonthlyCost).toBe(700000 + 62333 + 220000);
   });
 });
