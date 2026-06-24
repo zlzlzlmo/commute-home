@@ -18,8 +18,28 @@ function manwonToWon(raw: unknown): number {
 
 export function parseOfficetelRentXml(xml: string): RentItem[] {
   const obj = parser.parse(xml) as {
-    response?: { body?: { items?: { item?: unknown } } };
+    response?: { header?: { resultCode?: unknown; resultMsg?: unknown }; body?: { items?: { item?: unknown } } };
+    OpenAPI_ServiceResponse?: { cmmMsgHeader?: { returnReasonCode?: unknown; returnAuthMsg?: unknown } };
   };
+
+  // SOAP fault wrapper — data.go.kr returns this with HTTP 200 for bad/unregistered keys
+  if (obj?.OpenAPI_ServiceResponse) {
+    const h = obj.OpenAPI_ServiceResponse.cmmMsgHeader;
+    const detail = h?.returnAuthMsg ?? h?.returnReasonCode ?? 'unknown';
+    throw new Error(`MOLIT API error: ${detail}`);
+  }
+
+  // MOLIT error envelope — HTTP 200 with non-success resultCode in header
+  // Note: fast-xml-parser coerces '000' / '00' to the number 0, so we treat '0' as success too.
+  const resultCode = obj?.response?.header?.resultCode;
+  if (resultCode !== undefined && resultCode !== null) {
+    const code = String(resultCode);
+    if (code !== '00' && code !== '000' && code !== '0') {
+      const msg = obj?.response?.header?.resultMsg ?? '';
+      throw new Error(`MOLIT API error: ${code} ${msg}`);
+    }
+  }
+
   const rawItems = obj?.response?.body?.items?.item;
   if (!rawItems) return [];
   const list = Array.isArray(rawItems) ? rawItems : [rawItems];

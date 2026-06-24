@@ -17,4 +17,9 @@ describe('fetchSidoFuelPrice', () => {
     const fetchFn = jsonFetch({ RESULT: { OIL: [{ SIDONM: '경기', PRICE: '1680.0' }] } });
     await expect(fetchSidoFuelPrice(fetchFn, 'code', '서울')).rejects.toThrow('No fuel price for 서울');
   });
+
+  it('OIL 배열이 없으면(API 오류) Opinet API error throw', async () => {
+    const fetchFn = jsonFetch({ RESULT: { CODE: 'F001' } });
+    await expect(fetchSidoFuelPrice(fetchFn, 'code', '서울')).rejects.toThrow(/Opinet API error/);
+  });
 });

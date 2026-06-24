@@ -18,4 +18,11 @@ describe('fetchTransit', () => {
       fetchTransit(fetchFn, 'key', { lat: 37.5, lng: 127 }, { lat: 37.49, lng: 127.02 }),
     ).rejects.toThrow('No transit path');
   });
+
+  it('ODsay error 응답(HTTP 200 + error 필드) → ODsay API error throw', async () => {
+    const fetchFn = jsonFetch({ error: [{ code: '500', msg: 'API_KEY_ERROR' }] });
+    await expect(
+      fetchTransit(fetchFn, 'key', { lat: 37.5, lng: 127 }, { lat: 37.49, lng: 127.02 }),
+    ).rejects.toThrow(/ODsay API error/);
+  });
 });

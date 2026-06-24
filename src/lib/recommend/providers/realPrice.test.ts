@@ -51,3 +51,24 @@ describe('fetchOfficetelRent', () => {
     expect(items).toHaveLength(3);
   });
 });
+
+describe('parseOfficetelRentXml — error envelopes', () => {
+  it('MOLIT error resultCode(non-success) → throw MOLIT API error', () => {
+    const xml = `<response><header><resultCode>30</resultCode><resultMsg>SERVICE_KEY_IS_NOT_REGISTERED_ERROR</resultMsg></header><body></body></response>`;
+    expect(() => parseOfficetelRentXml(xml)).toThrow(/MOLIT API error/);
+  });
+
+  it('SOAP fault OpenAPI_ServiceResponse → throw MOLIT API error', () => {
+    const xml = `<OpenAPI_ServiceResponse><cmmMsgHeader><returnReasonCode>30</returnReasonCode><returnAuthMsg>SERVICE_KEY_IS_NOT_REGISTERED_ERROR</returnAuthMsg></cmmMsgHeader></OpenAPI_ServiceResponse>`;
+    expect(() => parseOfficetelRentXml(xml)).toThrow(/MOLIT API error/);
+  });
+
+  it('success resultCode 000 → does NOT throw', () => {
+    expect(() => parseOfficetelRentXml(SAMPLE_XML)).not.toThrow();
+  });
+
+  it('minimal single-item fixture with no header → does NOT throw', () => {
+    const xml = `<response><body><items><item><보증금액>1,500</보증금액><월세금액>60</월세금액><법정동>역삼동</법정동><전용면적>30</전용면적></item></items></body></response>`;
+    expect(() => parseOfficetelRentXml(xml)).not.toThrow();
+  });
+});
