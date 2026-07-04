@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 통근 (commute-home)
 
-## Getting Started
+> 출퇴근 통근 시간이 만드는 "기회비용"까지 계산해, 살 동네를 추천하는 서비스.
 
-First, run the development server:
+**🚧 개발 중**
+
+## 개요
+
+집을 고를 때 보통 월세·매매가만 보지만, **매일 왕복하는 통근 시간도 결국 비용**입니다. commute-home은 대중교통 경로·소요시간 데이터와 AI 분석을 결합해, 통근의 기회비용까지 반영한 "실질 비용" 관점으로 동네를 추천합니다.
+
+## 기술 스택
+
+`TypeScript` · `Next.js` · `Supabase` · `Anthropic Claude API` · `Tailwind CSS` · `Vitest`
+
+## 상태
+
+현재 개발 중입니다. 통근 시간·기회비용 계산과 추천 로직을 구현·검증하고 있습니다.
+
+## 실행
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+cp .env.example .env.local   # 키 채우기
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<sub>made by **[신승훈](https://github.com/zlzlzlmo)** · [기술블로그](https://hooneylog.com) · zlzlzlmo60@gmail.com</sub>
